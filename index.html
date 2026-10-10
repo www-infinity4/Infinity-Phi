@@ -23,9 +23,19 @@
   <script>
     (() => {
       const incoming = new URL(location.href);
-      const handoff = incoming.searchParams.get('codeHandoff') === '1' && incoming.searchParams.get('id');
-      const target = new URL(handoff ? 'https://www-infinity4.github.io/C13b0/phi/' : 'https://www-infinity4.github.io/C13b0/');
-      target.search = location.search;
+      const params = incoming.searchParams;
+      const handoff = params.get('codeHandoff') === '1' && params.get('id');
+      if (!handoff) {
+        const cardTitle = (params.get('cardTitle') || params.get('sharedTitle') || params.get('storyTitle') || '').trim().slice(0, 240);
+        const fallbackTitle = !params.get('q') ? (params.get('title') || '').trim().slice(0, 240) : '';
+        const title = cardTitle || fallbackTitle;
+        if (title && title !== (params.get('q') || '').trim()) {
+          params.set('q', title);
+          params.set('run', '1');
+        }
+      }
+      const target = new URL('https://www-infinity4.github.io/C13b0/phi/');
+      target.search = params.toString();
       target.hash = location.hash;
       location.replace(target.toString());
     })();
@@ -40,7 +50,7 @@
   <main>
     <h1>Infinity Phi</h1>
     <p>Opening the live Infinity Phi search.</p>
-    <p><a id="livePhi" href="https://www-infinity4.github.io/C13b0/">Open Infinity Phi</a></p>
+    <p><a id="livePhi" href="https://www-infinity4.github.io/C13b0/phi/">Open Infinity Phi</a></p>
   </main>
 </body>
 </html>
